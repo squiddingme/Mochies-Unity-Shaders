@@ -205,6 +205,7 @@ float4 frag(v2f i, bool isFrontFace: SV_IsFrontFace) : SV_Target {
 		#endif
 		float crestThreshold = smoothstep(_FoamCrestThreshold, 1, i.wave.y);
 		float crestFoam = saturate(foamTex.a * _FoamOpacity * _FoamCrestStrength * crestThreshold * foamCrestNoise * 10);
+		crestFoam = crestFoam * saturate(smoothstep(100.0f, 10.0f, i.length));
 		col.rgb = lerp(col.rgb, foamTex.rgb, crestFoam);
 
 		#if FOAM_NORMALS_ENABLED
@@ -331,6 +332,9 @@ float4 frag(v2f i, bool isFrontFace: SV_IsFrontFace) : SV_Target {
 		#endif
 	#endif
 
+	float vanish = saturate(smoothstep(200.0f, 100.0f, i.length)); // fade water at a distance to avoid needing to use fog that won't match the skybox
+	_Opacity = _Opacity * vanish;
+
 	#if defined(UNITY_PASS_FORWARDADD)
 		#if DEPTH_EFFECTS_ENABLED
 			#if EDGEFADE_ENABLED
@@ -358,7 +362,8 @@ float4 frag(v2f i, bool isFrontFace: SV_IsFrontFace) : SV_Target {
 		col.rgb += (emissCol * _EmissionColor);
 	#endif
 
-	UNITY_APPLY_FOG(i.fogCoord, col);
+	//UNITY_APPLY_FOG(i.fogCoord, col);
+
 	return col;
 }
 

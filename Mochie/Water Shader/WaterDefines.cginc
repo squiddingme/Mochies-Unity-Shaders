@@ -151,6 +151,8 @@ int _BlendNoiseSource;
 int _FlowMapUV;
 int _BackfaceReflections;
 
+float _UdonSyncedTime; // for synced waves
+
 const static float2 jump = float2(0.1, 0.25);
 
 #ifdef TESSELLATION_VARIANT
@@ -195,6 +197,7 @@ struct v2f {
 	#ifdef TESSELLATION_VARIANT
 		float offsetMask : TEXCOORD14;
 	#endif
+	float4 length : TEXCOORD16;
 	UNITY_FOG_COORDS(15)
 	UNITY_VERTEX_INPUT_INSTANCE_ID 
 	UNITY_VERTEX_OUTPUT_STEREO

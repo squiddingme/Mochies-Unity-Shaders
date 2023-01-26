@@ -114,7 +114,7 @@ float3 GerstnerWave(float4 wave, float3 vertex, float speed, float rotation){
 	float c = sqrt(9.8/k);
 	float2 dir = normalize(wave.xy);
 	dir = Rotate2D(dir, rotation);
-	float f = k * (dot(dir,vertex.xz) - c * _Time.y*0.2*speed);
+	float f = k * (dot(dir,vertex.xz) - c * _UdonSyncedTime*0.2*speed); // use synced time
 	float a = wave.z / k;
 	return float3(0, a * sin(f), dir.y * (a*cos(f)));
 }

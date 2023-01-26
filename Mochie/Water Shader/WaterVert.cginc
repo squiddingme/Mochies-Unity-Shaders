@@ -38,6 +38,7 @@ v2f vert (
 		v.vertex.xyz += o.wave;
 		o.wave.y = (o.wave.y + 1) * 0.5;
 	#elif GERSTNER_ENABLED
+		float3 coords = mul(unity_ObjectToWorld, v.vertex); // waves in world space
 		float turb = 0;
 		float3 wave0 = 0;
 		float3 wave1 = 0;
@@ -46,7 +47,7 @@ v2f vert (
 			_Turbulence *= _WaveStrengthGlobal;
 			_TurbulenceSpeed *= _WaveSpeedGlobal;
 			_TurbulenceScale *= _WaveScaleGlobal;
-			turb = Perlin3D(float3(v.uv.xy*_TurbulenceScale, _Time.y*_TurbulenceSpeed))+1;
+			turb = Perlin3D(float3(coords.xy*_TurbulenceScale, _UdonSyncedTime*_TurbulenceSpeed))+1;
 			turb *= _Turbulence*0.1;
 		}
 		if (_WaveStrength0 > 0){
@@ -54,21 +55,21 @@ v2f vert (
 			_WaveSpeed0 *= _WaveSpeedGlobal;
 			_WaveScale0 *= _WaveScaleGlobal;
 			float4 waveProperties0 = float4(0,1, _WaveStrength0 + turb, _WaveScale0);
-			wave0 = GerstnerWave(waveProperties0, v.vertex.xyz, _WaveSpeed0, _WaveDirection0);
+			wave0 = GerstnerWave(waveProperties0, coords, _WaveSpeed0, _WaveDirection0);
 		}
 		if (_WaveStrength1 > 0){
 			_WaveStrength1 *= _WaveStrengthGlobal;
 			_WaveSpeed1 *= _WaveSpeedGlobal;
 			_WaveScale1 *= _WaveScaleGlobal;
 			float4 waveProperties1 = float4(0,1, _WaveStrength1 + turb, _WaveScale1);
-			wave1 = GerstnerWave(waveProperties1, v.vertex.xyz, _WaveSpeed1, _WaveDirection1);
+			wave1 = GerstnerWave(waveProperties1, coords, _WaveSpeed1, _WaveDirection1);
 		}
 		if (_WaveStrength2 > 0){
 			_WaveStrength2 *= _WaveStrengthGlobal;
 			_WaveSpeed2 *= _WaveSpeedGlobal;
 			_WaveScale2 *= _WaveScaleGlobal;
 			float4 waveProperties2 = float4(0,1, _WaveStrength2 + turb, _WaveScale2);
-			wave2 = GerstnerWave(waveProperties2, v.vertex.xyz, _WaveSpeed2, _WaveDirection2);
+			wave2 = GerstnerWave(waveProperties2, coords, _WaveSpeed2, _WaveDirection2);
 		}
 		o.wave = wave0 + wave1 + wave2;
 		#ifdef TESSELLATION_VARIANT
@@ -100,6 +101,7 @@ v2f vert (
 	float2 uvs[] = {v.uv, v.uv1, v.uv2, v.uv3};
 	o.uvFlow = uvs[_FlowMapUV].xy;
 	o.uv = v.uv;
+	o.length = length(ObjSpaceViewDir(v.vertex));
 
 	o.isInVRMirror = _VRChatMirrorMode == 1;
 
