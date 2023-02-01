@@ -47,7 +47,7 @@ v2f vert (
 			_Turbulence *= _WaveStrengthGlobal;
 			_TurbulenceSpeed *= _WaveSpeedGlobal;
 			_TurbulenceScale *= _WaveScaleGlobal;
-			turb = Perlin3D(float3(coords.xy*_TurbulenceScale, _UdonSyncedTime*_TurbulenceSpeed))+1;
+			turb = Perlin3D(float3(coords.xz*_TurbulenceScale, _UdonSyncedTime*_TurbulenceSpeed))+1;
 			turb *= _Turbulence*0.1;
 		}
 		if (_WaveStrength0 > 0){
